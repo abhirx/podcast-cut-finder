@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Find and construct stronger podcast clips with sentence-level cut plans." />
+  <title>Cutroom — Podcast clip finder</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0a0a'/%3E%3Cpath d='M18 20h28v8H18zm0 16h18v8H18z' fill='%23f6c945'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Cutroom home"><span class="brand-mark">C</span><span>Cutroom</span></a>
+      <div class="top-actions">
+        <button class="quiet-button" id="settingsButton" type="button">Setup</button>
+        <span class="status-pill"><span></span> Personal workspace</span>
+      </div>
+    </header>
+
+    <section class="workspace-head">
+      <div>
+        <p class="eyebrow">Podcast editor</p>
+        <h1>Find the clip. Cut the drag.</h1>
+        <p class="intro">Paste an episode and get complete Reel constructions, including sentences worth removing even when they stay on topic.</p>
+      </div>
+      <div class="benchmark-chip">Benchmark trained on 5 human edits</div>
+    </section>
+
+    <section class="input-card" aria-labelledby="analyse-title">
+      <div class="input-row">
+        <div class="url-field">
+          <label id="analyse-title" for="youtubeUrl">YouTube episode</label>
+          <input id="youtubeUrl" type="url" value="https://youtu.be/x63HCoDfAhQ" placeholder="Paste a YouTube episode link" />
+        </div>
+        <button class="primary-button" id="analyseButton" type="button"><span>Analyse episode</span><span aria-hidden="true">→</span></button>
+      </div>
+      <div class="options-row">
+        <label><span>Language</span><select id="language"><option>Auto-detect</option><option>Hindi + English</option><option>English</option><option>Hindi</option></select></label>
+        <label><span>Clip range</span><select id="duration"><option>Natural length</option><option>Under 30 sec</option><option>30–45 sec</option><option>45–60 sec</option><option>60–90 sec</option></select></label>
+        <label class="check-option"><input id="headlineContext" type="checkbox" checked /><span>Allow headline to replace spoken context</span></label>
+      </div>
+      <details class="transcript-fallback">
+        <summary>Transcript fallback</summary>
+        <textarea id="transcript" placeholder="If captions cannot be retrieved, paste a timestamped transcript here. SRT, VTT and [HH:MM:SS] text are supported."></textarea>
+      </details>
+    </section>
+
+    <section id="emptyState" class="empty-state">
+      <div class="empty-orbit"><div class="play">▶</div></div>
+      <h2>Ready for the first pass</h2>
+      <p>The tool will search below the topic level, find anchor lines, then rebuild the strongest coherent clips around them.</p>
+      <button id="loadDemo" class="text-button" type="button">View the benchmark analysis</button>
+    </section>
+
+    <section id="loadingState" class="loading-state hidden" aria-live="polite">
+      <div class="loading-top"><span id="loadingLabel">Reading the conversation</span><strong id="loadingPercent">18%</strong></div>
+      <div class="progress"><div id="progressBar"></div></div>
+      <div class="loading-steps"><span class="active">Understand episode</span><span>Find anchors</span><span>Construct edits</span><span>Check meaning</span></div>
+    </section>
+
+    <section id="results" class="results hidden">
+      <div class="results-bar">
+        <div><p class="eyebrow">Candidate board</p><h2><span id="resultCount">5</span> edits worth reviewing</h2></div>
+        <div class="filter-tabs" role="tablist"><button class="active" data-filter="all">All</button><button data-filter="surprise">Surprise</button><button data-filter="emotion">Emotion</button><button data-filter="universal">Universal</button></div>
+      </div>
+      <div class="results-layout">
+        <div id="candidateList" class="candidate-list"></div>
+        <aside id="detailPanel" class="detail-panel"></aside>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="settingsDialog">
+    <form method="dialog" class="settings-card">
+      <div class="dialog-head"><div><p class="eyebrow">Connection</p><h2>Tool setup</h2></div><button class="icon-button" value="cancel" aria-label="Close">×</button></div>
+      <p>Enter the backend address after it is deployed. Your AI key stays on that backend, never in this page.</p>
+      <label>Worker API URL<input id="apiUrl" placeholder="https://podcast-editor.your-name.workers.dev" /></label>
+      <div class="dialog-actions"><button class="quiet-button" value="cancel">Cancel</button><button class="primary-button" id="saveSettings" value="default">Save setup</button></div>
+    </form>
+  </dialog>
+  <script src="app.js"></script>
+</body>
+</html>
