@@ -70,7 +70,7 @@ async function analyse(){
   if(!url&&!transcript){$('#youtubeUrl').focus();return}
   show('loading');let p=10;const labels=[[22,'Retrieving captions'],[43,'Mapping the conversation'],[62,'Finding anchor lines'],[79,'Constructing alternate edits'],[91,'Checking that meaning is preserved']];const timer=setInterval(()=>{p=Math.min(94,p+Math.random()*7);$('#progressBar').style.width=p+'%';$('#loadingPercent').textContent=Math.round(p)+'%';const item=[...labels].reverse().find(x=>p>=x[0]);if(item)$('#loadingLabel').textContent=item[1]},500);
   try{
-    const api=localStorage.getItem('cutroomApi');
+    const api=localStorage.getItem('cutroomApi') || 'https://cutroom-api.abhirx99.workers.dev';
     if(api){const res=await fetch(api.replace(/\/$/,'')+'/api/analyze',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({youtubeUrl:url,transcript,language:$('#language').value,duration:$('#duration').value,headlineContext:$('#headlineContext').checked})});if(!res.ok)throw new Error((await res.json().catch(()=>({}))).error||'Analysis failed');const data=await res.json();candidates=data.candidates}
     else{await new Promise(r=>setTimeout(r,2500));candidates=benchmark}
     clearInterval(timer);$('#progressBar').style.width='100%';$('#loadingPercent').textContent='100%';setTimeout(()=>{show('results');render()},350);
